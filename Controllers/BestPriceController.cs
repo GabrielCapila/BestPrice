@@ -14,8 +14,8 @@ namespace BestPrice.Controllers
         {
             _logger = logger;
         }
-
-        [HttpPost(Name = "SendHTML")]
+        [HttpPost]
+        [Route("SendHTML")]
 
         public void SendHtml()
         {
@@ -47,7 +47,8 @@ namespace BestPrice.Controllers
                 Console.WriteLine(node.InnerHtml);
             }
         }
-        [HttpGet(Name = "GetHTML")]
+        [HttpGet]
+        [Route("GetHTML")]
 
         public string GetHtml(string html)
         {
