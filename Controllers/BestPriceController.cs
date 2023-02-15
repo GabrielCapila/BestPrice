@@ -57,9 +57,18 @@ namespace BestPrice.Controllers
             HtmlWeb web = new HtmlWeb();
 
             var htmlDoc = web.Load(html);
-            if (htmlDoc != null)
+
+            var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//body");
+            string retorno = string.Empty;
+            foreach (var node in htmlNodes)
             {
-                return htmlDoc.Text;
+
+                retorno = node.InnerHtml;
+
+            }
+            if (retorno != null)
+            {
+                return retorno;
             }
             else
             {
