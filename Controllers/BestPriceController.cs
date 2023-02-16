@@ -1,3 +1,4 @@
+using BestPrice.Interface;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace BestPrice.Controllers
     {
 
         private readonly ILogger<BestPriceController> _logger;
+        //private readonly IManageHTMLService _manageHTMLService;
 
         public BestPriceController(ILogger<BestPriceController> logger)
         {
             _logger = logger;
+            //_manageHTMLService = manageHTMLService;
         }
         [HttpPost]
         [Route("SendHTML")]
