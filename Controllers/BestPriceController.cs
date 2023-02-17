@@ -1,6 +1,9 @@
 using BestPrice.Interface;
+using FireSharp.Config;
+using FireSharp.Interfaces;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Nodes;
 
 namespace BestPrice.Controllers
 {
@@ -17,42 +20,40 @@ namespace BestPrice.Controllers
             _logger = logger;
             //_manageHTMLService = manageHTMLService;
         }
-        [HttpPost]
-        [Route("SendHTML")]
 
-        public void SendHtml()
-        {
-            string html = @"<body><div>" +
-                          "  <h1 class\"price\">This is heading 1</h1>" +
-                          "</div>" +
-                          "<div>" +
-                          "  <h1 class\"price\">This is heading 2</h1>" +
-                          "</div>" +
-                          "<div>" +
-                          "  <h1 class\"price\">This is heading 3</h1>" +
-                          "</div>" +
-                          "<div>" +
-                          "  <h1 class\"price\">This is heading 4</h1>" +
-                          "</div>" +
-                          "<div>" +
-                          "  <h1 class\"price\">This is heading 5</h1>" +
-                          "</div>" +
-                          "<body>";
 
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
+        //public void SendHtml()
+        //{
+        //    string html = @"<body><div>" +
+        //                  "  <h1 class\"price\">This is heading 1</h1>" +
+        //                  "</div>" +
+        //                  "<div>" +
+        //                  "  <h1 class\"price\">This is heading 2</h1>" +
+        //                  "</div>" +
+        //                  "<div>" +
+        //                  "  <h1 class\"price\">This is heading 3</h1>" +
+        //                  "</div>" +
+        //                  "<div>" +
+        //                  "  <h1 class\"price\">This is heading 4</h1>" +
+        //                  "</div>" +
+        //                  "<div>" +
+        //                  "  <h1 class\"price\">This is heading 5</h1>" +
+        //                  "</div>" +
+        //                  "<body>";
 
-            var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//body/h1");
+        //    HtmlDocument htmlDoc = new HtmlDocument();
+        //    htmlDoc.LoadHtml(html);
 
-            foreach (var node in htmlNodes)
-            {
+        //    var htmlNodes = htmlDoc.DocumentNode.SelectNodes("//body/h1");
 
-                Console.WriteLine(node.InnerHtml);
-            }
-        }
+        //    foreach (var node in htmlNodes)
+        //    {
+
+        //        Console.WriteLine(node.InnerHtml);
+        //    }
+        //}
         [HttpGet]
         [Route("GetHTML")]
-
         public string GetHtml(string html)
         {
             html = @$"{html}";
@@ -72,6 +73,7 @@ namespace BestPrice.Controllers
             if (retorno != null)
             {
                 return retorno;
+
             }
             else
             {
@@ -80,52 +82,62 @@ namespace BestPrice.Controllers
 
 
         }
-        //public string SendHtml(string html, string strStart, string strEnd)
-        //{
-
-        //    if (html.Contains(strStart) && html.Contains(strEnd))
-        //    {
-
-        //        int Start, End;
-        //        string firstMoment = string.Empty;
-        //        for (int i = 0; i < html.Length; i++)
-        //        {
-        //            Start = html.IndexOf(strStart, i) + strStart.Length;
-        //            End = html.IndexOf(strEnd, Start);
-        //            firstMoment = html.Substring(Start, End - Start);
-        //        }
-
-        //        return firstMoment;
+        [HttpPost]
+        [Route("SaveHTML")]
+        public void SaveHTML(Product product)
+        {
+            string authSecret = "15EXhVdHKfsRkijFl8rOX8JQyECBU21820hfgZwO";
+            string basePath = "https://bestprice-12a8d-default-rtdb.firebaseio.com";
+            string senderAppName = "BestPriceApp";
 
 
+            IFirebaseClient client;
+            IFirebaseConfig config = new FirebaseConfig
+            {
+                AuthSecret = authSecret,
+                BasePath = basePath
+            };
 
-        //        //Start = html.IndexOf(strStart, End) + strStart.Length;
-        //        //End = html.IndexOf(strEnd, Start);
+            client = new FireSharp.FirebaseClient(config);
+            if (client != null && !string.IsNullOrEmpty(basePath) && !string.IsNullOrEmpty(authSecret))
+            {
+                var data = new
+                {
+                    //Name=a,
+                    //Price=b
+                    Name = product.Name,
+                    Price = product.Price,
+                    Description = product.Description
+                };
+                 client.Push("doc/", data);
+            }
+            
+        }
 
-        //        //string secondMoment = html.Substring(Start, End - Start);
 
-        //        // return html.Substring(Start, End - Start);
-        //        //firstMoment += html.Substring(End);
-        //    }
-        //    else
-        //    {
-        //        return "there is no word";
-        //    }
-        //}
-        //public string SendHtml(string html, string strStart, string strEnd)
-        //{
 
-        //    if (html.Contains(strStart) && html.Contains(strEnd))
-        //    {
-        //        int Start, End;
-        //        Start = html.IndexOf(strStart, 0) + strStart.Length;
-        //        End = html.IndexOf(strEnd, Start);
-        //        return html.Substring(Start, End - Start);
-        //    }
-        //    else
-        //    {
-        //        return "there is no word";
-        //    }
-        //}
     }
+    //[HttpPost]
+    //[Route("SendHTML")]
+    //public string SendHtml(string html, string path)
+    //{
+    //    HtmlWeb web = new HtmlWeb();
+    //    var retorno = string.Empty;
+    //    var doc = web.Load(html);
+
+    //    var nodes = doc.DocumentNode.SelectNodes($"{path}[position()>1]");
+
+    //    foreach (var node in nodes)
+    //    {
+    //        retorno = node.SelectSingleNode("a[2]").InnerText;
+    //    }
+
+
+    //    if (retorno != null)
+
+    //        return retorno;
+    //    else
+    //        return "did not work";
+    //}
+
 }
